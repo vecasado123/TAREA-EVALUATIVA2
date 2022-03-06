@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  # Apache
+  apache:
+    container_name: apache
+    build: apache/
+    ports: 
+      - 80:80
+    volumes:
+      - proyecto:/var/www/html/
+    links:
+      - mysql
+    
+
+      
+  # Database
+  mysql:
+    container_name: mysql
+    #command: --default-authentication-plugin=mysql_native_password
+    build: mysql/
+    restart: always
+    ports:
+    - 3306:3306
+    volumes: 
+      - my-db:/var/lib/mysql     
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      #MYSQL_DATABASE: dwess
+      #MYSQL_USER: dwes
+      #MYSQL_PASSWORD: dwes
+    
+    
+    
+  # phpmyadmin
+  phpmyadmin:
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root
+
+  #PHP
+  php:
+    container_name: php
+    build: php/
+    ports:  
+      - 9000:9000
+    volumes:
+      - proyecto:/var/www/html/
+    links:
+      - mysql
+    
+volumes:
+  proyecto:  
+  my-db:
+
+  
